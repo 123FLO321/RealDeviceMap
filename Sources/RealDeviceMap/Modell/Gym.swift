@@ -1029,4 +1029,43 @@ class Gym: JSONConvertibleObject, WebHookEvent, Hashable {
         return lhs.id == rhs.id
     }
 
+    public static func getAllWithoutName(mysql: MySQL?=nil) {
+
+        guard let mysql = mysql ?? DBController.global.mysql else {
+            Log.error(message: "[GYM] Failed to connect to database.")
+            throw DBController.DBError()
+        }
+
+        var sql = """
+            SELECT id, lat, lon, url
+            FROM gym
+            WHERE (name = null OR name = "") AND deleted = false
+        """
+
+        let mysqlStmt = MySQLStmt(mysql)
+        _ = mysqlStmt.prepare(statement: sql)
+
+        guard mysqlStmt.execute() else {
+            Log.error(message: "[GYM] Failed to execute query. (\(mysqlStmt.errorMessage())")
+            throw DBController.DBError()
+        }
+        let results = mysqlStmt.results()
+
+        var gyms = [Gym]()
+        while let result = results.next() {
+            let id = result[0] as! String
+            let lat = result[1] as! Double
+            let lon = result[2] as! Double
+            let intel = "https://intel.ingress.com/intel?ll=\(lat),\(lon)&z=17&pll=\(lat),\(lon)"
+            let url = intel
+
+            gyms.append(Gym(id: id,lat: lat,lon: lon,name: name,url: url))
+        }
+        return gyms
+    }
+
+    public static func getAllWithoutNameAsJson(mysql: MySQL?=nil) {
+        return try? JSONSerialization.jsonObject(with: Gym.getAllWithoutName())
+    }
+
 }

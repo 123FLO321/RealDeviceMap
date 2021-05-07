@@ -1,0 +1,52 @@
+// eslint-disable-next-line no-unused-vars
+/* global L i18n ga adsbygoogle:writable */
+
+
+document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
+});
+
+$(function () {
+  $('#exportGymsWithoutName').on('click', function () {
+    var json = JSON.stringify(settings)
+    var el = document.createElement('a')
+    el.setAttribute('href', 'data:text/plain;chartset=utf-8,' + encodeURIComponent(json))
+    el.setAttribute('download', 'gyms.json')
+    el.style.display = 'none'
+    document.body.appendChild(el)
+    el.click()
+    document.body.removeChild(el)
+  })
+
+  $('#importGymNames').on('click', function () {
+    $('#importGymNamesFile').click()
+  })
+
+  document.getElementById('importGymNamesFile').addEventListener('change', loadGymNames, false)
+})
+// MARK: - Misc
+
+function loadGymNames (e) {
+  var file = e.target.files[0]
+  if (!file) {
+    return
+  }
+  var gyms = []
+  var column_count = 3
+  var reader = new FileReader()
+  reader.onload = function (file) {
+    var contents = file.target.result
+    var allTextLines = contents.split(/\r\n|\n/)
+
+    for (var i=0; i < allTextLines.length; i++) {
+      var data = allTextLines[i].split(';')
+      var element = []
+      for (var j =0; j < column_count; j++) {
+        element.push(data[j])
+      }
+      gyms.push(element)
+    }
+  }
+  //TODO update gyms in database
+  
+}

@@ -1,4 +1,5 @@
 {{> header}}
+<script src="/dashboard_utilities.js"></script>
 <body>
 
     {{#show_error}}<br>{{/show_error}}
@@ -41,6 +42,14 @@
                     onclick="return confirm('Are you sure that you want to delete {{stale_pokestops}} stale Pokestops that haven\'t been seen in the last 25 hours?');">
                     Delete Stale Pokestops {{#stale_pokestops}}({{stale_pokestops}} Not seen last 25 hours){{/stale_pokestops}}
                 </button>
+                <button type="button" id="exportGymsWithoutName" class="list-group-item list-group-item-action list-group-item-danger"
+                    onclick="return confirm('Are you sure that you want to query all gyms without name?');">
+                    Query all gyms without name
+                </button>
+                <button type="button" id="importGymNames" class="list-group-item list-group-item-action list-group-item-danger">
+                    Update all gyms without name
+                </button>
+                <input type="file" id="importGymNamesFile" accept="text/csv" class="btn btn-primary" hidden>
                 <input type="hidden" name="_csrf" value="{{csrf}}">
             </form>
         </div>
